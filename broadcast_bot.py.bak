@@ -1,0 +1,86 @@
+import logging
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from datetime import time
+
+# Enable logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
+# Replace with your bot token
+BOT_TOKEN = "7339742375:AAHq490Hnpe6EqSCNWgdPcp7wNxJcRBb7gU"
+
+# Replace with your group/channel ID (e.g., @channelusername or -1001234567890 for groups)
+CHAT_ID = "@duduu_mendez_bots_store"
+
+# Define the message with buttons
+async def send_custom_message(chat_id, context):
+    # Create inline keyboard buttons
+    keyboard = [
+        [
+            InlineKeyboardButton("Join Our Telegram Channel", url="https://t.me/duduu_mendez_store")
+        ],
+        [
+            InlineKeyboardButton("Subscribe Our YouTube Channel", url="https://youtube.com/@duduu_mendez?si=U2J-NcS4ho25wpyY")
+        ],
+        [
+            InlineKeyboardButton("Join Our WhatsApp Group", url="https://whatsapp.com/channel/0029VacgCaPKmCPGmTmrnT04")
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # Custom message text
+    message_text = (
+        "🚀 *Welcome!* 🚀\n\n"
+        "Join our community to stay updated and never miss out on exciting content:\n\n"
+        "👉 Join our **Telegram Channel** for daily updates.\n"
+        "👉 Subscribe to our **YouTube Channel** for awesome videos.\n"
+        "👉 Join our **WhatsApp Group** for real-time discussions.\n\n"
+        "Click the buttons below to join now!"
+    )
+
+    # Send the message with buttons
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text=message_text,
+        reply_markup=reply_markup,
+        parse_mode="Markdown"
+    )
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Bot is running! Use /broadcast to send a test message.")
+
+async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        await send_custom_message(CHAT_ID, context)
+        await update.message.reply_text("Broadcast message sent successfully!")
+    except Exception as e:
+        logger.error(f"Error broadcasting message: {e}")
+        await update.message.reply_text("Failed to send broadcast message.")
+
+async def scheduled_broadcast(context: ContextTypes.DEFAULT_TYPE):
+    try:
+        await send_custom_message(CHAT_ID, context)
+        logger.info("Daily broadcast message sent.")
+    except Exception as e:
+        logger.error(f"Error in scheduled broadcast: {e}")
+
+def main():
+    # Create the Application
+    application = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    # Add command handlers
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("broadcast", broadcast))
+
+    # Schedule the daily broadcast
+    job_queue = application.job_queue
+    job_queue.run_daily(scheduled_broadcast, time=time(hour=9, minute=0))  # Set time for daily broadcast (e.g., 9:00 AM)
+
+    # Start the bot
+    application.run_polling()
+
+if __name__ == "__main__":
+    main()
