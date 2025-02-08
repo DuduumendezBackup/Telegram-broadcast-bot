@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 BOT_TOKEN = "7339742375:AAHq490Hnpe6EqSCNWgdPcp7wNxJcRBb7gU"
 
 # Replace with your group/channel ID (e.g., @channelusername or -1001234567890 for groups)
-CHAT_ID = "@duduu_mendez_bots_store"
+CHAT_ID = "duduu_mendez_store"
 
 # Define multiple messages
 MESSAGES = [
